@@ -19,43 +19,43 @@ st.set_page_config(page_title="StatArb Quant Platform", layout="wide", page_icon
 
 
 # EN-TÊTE DE L'APPLICATION
-st.title("📈 Plateforme d'Arbitrage Statistique (StatArb)")
+st.title("📈 Statistical Arbitrage Platform (StatArb)")
 st.markdown("""
-**Moteur Quantitatif Market-Neutral par Cointégration Dynamique**  
-Cette application démontre la mise en production d'une stratégie de *Pairs Trading*. 
-Elle modélise le ratio de couverture par Filtre de Kalman et alloue le capital en intégrant les frictions réelles du marché.
+**Market-Neutral Quantitative Engine via Dynamic Cointegration**  
+This application demonstrates the production deployment of a *Pairs Trading* strategy. 
+It models the hedge ratio using a Kalman Filter and allocates capital by integrating real market frictions.
 """)
 
 
 # BARRE LATÉRALE : PARAMÉTRAGE DU MODÈLE
 with st.sidebar:
-    st.header("⚙️ Paramétrage du Modèle")
+    st.header("⚙️ Model Configuration")
     
-    st.subheader("1. Univers d'Investissement")
+    st.subheader("1. Investment Universe")
     col_y, col_x = st.columns(2)
     with col_y:
-        ticker_y = st.text_input("Actif Y", value="KO", help="Actif dépendant (ex: Coca-Cola)")
+        ticker_y = st.text_input("Asset Y", value="KO", help="Dependent asset (e.g., Coca-Cola)")
     with col_x:
-        ticker_x = st.text_input("Actif X", value="PEP", help="Actif indépendant (ex: PepsiCo)")
+        ticker_x = st.text_input("Asset X", value="PEP", help="Independent asset (e.g., PepsiCo)")
     
-    start_date = st.date_input("Date de début", pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Date de fin", pd.to_datetime("2024-01-01"))
+    start_date = st.date_input("Start Date", pd.to_datetime("2020-01-01"))
+    end_date = st.date_input("End Date", pd.to_datetime("2024-01-01"))
 
     st.subheader("2. Frictions & Capital")
-    capital = st.number_input("Capital Alloué ($)", value=10000.0, step=1000.0, help="Capital nominal engagé par trade.")
-    tc_bps = st.number_input("Commissions (bps)", value=5.0, help="Frais de courtage en points de base.")
-    borrow_fee = st.number_input("Emprunt Short (%)", value=2.0, help="Taux annualisé pour la vente à découvert.") / 100
+    capital = st.number_input("Allocated Capital ($)", value=10000.0, step=1000.0, help="Nominal capital committed per trade.")
+    tc_bps = st.number_input("Commissions (bps)", value=5.0, help="Brokerage fees in basis points.")
+    borrow_fee = st.number_input("Short Borrow Fee (%)", value=2.0, help="Annualized rate for short selling.") / 100
 
-    st.subheader("3. Signaux d'Exécution")
-    entry_z = st.slider("Seuil Z-Score (Entrée)", min_value=1.0, max_value=4.0, value=2.0, step=0.1, 
-                        help="Nombre d'écarts-types pour déclencher un ordre d'arbitrage.")
+    st.subheader("3. Execution Signals")
+    entry_z = st.slider("Z-Score Threshold (Entry)", min_value=1.0, max_value=4.0, value=2.0, step=0.1, 
+                        help="Number of standard deviations to trigger an arbitrage order.")
 
-    run_engine = st.button("🚀 Lancer le Moteur Quantitatif", type="primary", use_container_width=True)
+    run_engine = st.button("🚀 Run Quantitative Engine", type="primary", use_container_width=True)
 
 
 # EXÉCUTION DU PIPELINE QUANTITATIF
 if run_engine:
-    with st.spinner("Acquisition des données et calculs matriciels en cours..."):
+    with st.spinner("Fetching data and performing matrix calculations..."):
         
         # 1. Ingestion
         df_prices = MarketData.fetch_pair_data(ticker_y, ticker_x, str(start_date), str(end_date))
@@ -85,66 +85,66 @@ if run_engine:
 
 
         # STRUCTURE EN ONGLETS
-        tab1, tab2, tab3 = st.tabs(["📊 Tableau de Bord Global", "🧠 Mécanique Mathématique", "💼 Risque & Performance"])
+        tab1, tab2, tab3 = st.tabs(["📊 Global Dashboard", "🧠 Mathematical Mechanics", "💼 Risk & Performance"])
 
         # ONGLET 1 : VUE D'ENSEMBLE & SIGNAUX
         with tab1:
-            st.subheader(f"Arbitrage sur la paire {ticker_y} / {ticker_x}")
+            st.subheader(f"Arbitrage on the {ticker_y} / {ticker_x} pair")
             
             # KPIs Métiers
             kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-            kpi1.metric("PnL Net", f"{metrics['PnL Net ($)']:.2f} $", help="Profit net de toutes les frictions de marché.")
-            kpi2.metric("Sharpe Ratio", f"{metrics['Sharpe Ratio']:.2f}", help="Rendement ajusté au risque (Annualisé).")
-            kpi3.metric("Win Rate", f"{metrics['Win Rate (%)']:.1f} %", help="Pourcentage de jours passés en position avec un PnL positif.")
-            kpi4.metric("Max Drawdown", f"{metrics['Max Drawdown (%)']:.2f} %", help="Pire chute du capital observée.")
+            kpi1.metric("Net PnL", f"{metrics['PnL Net ($)']:.2f} $", help="Net profit after all market frictions.")
+            kpi2.metric("Sharpe Ratio", f"{metrics['Sharpe Ratio']:.2f}", help="Risk-adjusted return (Annualized).")
+            kpi3.metric("Win Rate", f"{metrics['Win Rate (%)']:.1f} %", help="Percentage of days spent in position with a positive PnL.")
+            kpi4.metric("Max Drawdown", f"{metrics['Max Drawdown (%)']:.2f} %", help="Worst observed capital drop.")
 
             # Explication interactive
-            with st.expander("💡 Comment lire ce graphique ?"):
+            with st.expander("💡 How to read this chart?"):
                 st.write("""
-                Ce graphique représente la **déviation normalisée** du spread (Z-Score). 
-                - La courbe violette est l'écart entre les deux actifs, ajusté du ratio de couverture dynamique.
-                - Lorsque la courbe franchit les lignes pointillées rouges/vertes, le modèle détecte une anomalie statistique et ouvre une position.
-                - La position est conservée jusqu'au retour à la moyenne (ligne pointillée grise à 0).
+                This chart represents the **normalized deviation** of the spread (Z-Score). 
+                - The purple curve is the spread between the two assets, adjusted for the dynamic hedge ratio.
+                - When the curve crosses the red/green dashed lines, the model detects a statistical anomaly and opens a position.
+                - The position is held until mean reversion (gray dotted line at 0).
                 """)
 
             # Graphe Z-Score
             fig_z = go.Figure()
             fig_z.add_trace(go.Scatter(x=df_results.index, y=df_results['zscore'], name="Z-Score", line=dict(color='purple', width=1.5)))
-            fig_z.add_hline(y=entry_z, line_dash="dash", line_color="red", annotation_text="Seuil Short Spread")
-            fig_z.add_hline(y=-entry_z, line_dash="dash", line_color="green", annotation_text="Seuil Long Spread")
-            fig_z.add_hline(y=0.0, line_dash="dot", line_color="gray", annotation_text="Retour à la moyenne")
+            fig_z.add_hline(y=entry_z, line_dash="dash", line_color="red", annotation_text="Short Spread Threshold")
+            fig_z.add_hline(y=-entry_z, line_dash="dash", line_color="green", annotation_text="Long Spread Threshold")
+            fig_z.add_hline(y=0.0, line_dash="dot", line_color="gray", annotation_text="Mean Reversion")
             
             longs = df_results[df_results['signal'] == 1]
             shorts = df_results[df_results['signal'] == -1]
-            fig_z.add_trace(go.Scatter(x=longs.index, y=longs['zscore'], mode='markers', marker=dict(color='green', size=8), name="Entrée Long"))
-            fig_z.add_trace(go.Scatter(x=shorts.index, y=shorts['zscore'], mode='markers', marker=dict(color='red', size=8), name="Entrée Short"))
+            fig_z.add_trace(go.Scatter(x=longs.index, y=longs['zscore'], mode='markers', marker=dict(color='green', size=8), name="Long Entry"))
+            fig_z.add_trace(go.Scatter(x=shorts.index, y=shorts['zscore'], mode='markers', marker=dict(color='red', size=8), name="Short Entry"))
             
             fig_z.update_layout(height=400, margin=dict(l=0, r=0, t=30, b=0), hovermode="x unified")
             st.plotly_chart(fig_z, use_container_width=True)
 
         # ONGLET 2 : THÉORIE ET MÉTHODOLOGIE QUANT
         with tab2:
-            st.subheader("Filtrage Bruit/Signal et Dynamique Stochastique")
+            st.subheader("Noise/Signal Filtering and Stochastic Dynamics")
             
             col_m1, col_m2 = st.columns(2)
             with col_m1:
-                st.info(f"**Demi-vie (Half-Life) :** {half_life:.2f} jours")
+                st.info(f"**Half-Life:** {half_life:.2f} days")
                 st.write("""
-                Calculée via le processus d'**Ornstein-Uhlenbeck**, la demi-vie représente le temps nécessaire pour que le spread résorbe 50% de son écart à la moyenne après un choc. 
-                *Plus elle est courte, moins la stratégie souffre des coûts de portage.*
+                Calculated via the **Ornstein-Uhlenbeck** process, the half-life represents the time required for the spread to mean-revert 50% of its deviation after a shock. 
+                *The shorter it is, the less the strategy suffers from carry costs.*
                 """)
             with col_m2:
-                st.info(f"**Fenêtre de standardisation :** {lookback} jours")
+                st.info(f"**Standardization window:** {lookback} days")
                 st.write("""
-                Le Z-score n'est pas calculé sur une moyenne globale biaisée, mais sur une fenêtre glissante calibrée sur $1.5 \\times t_{1/2}$. 
-                Cela garantit un modèle adaptatif et **sans aucun lookahead bias**.
+                The Z-score is not calculated on a biased global mean, but on a rolling window calibrated to $1.5 \\times t_{1/2}$. 
+                This ensures an adaptive model **without any lookahead bias**.
                 """)
 
             st.markdown("---")
-            st.markdown("### 🔄 Le Ratio de Couverture (Filtre de Kalman)")
+            st.markdown("### 🔄 Hedge Ratio (Kalman Filter)")
             st.write("""
-            Contrairement à la régression classique (OLS) qui fige la relation entre les deux actifs, le **Filtre de Kalman** met à jour le $\\beta_t$ récursivement. 
-            Il modélise la capacité de la relation à dériver dans le temps.
+            Unlike classic regression (OLS) which fixes the relationship between the two assets, the **Kalman Filter** updates the $\\beta_t$ recursively. 
+            It models the relationship's ability to drift over time.
             """)
             
             fig_beta = go.Figure()
@@ -154,26 +154,26 @@ if run_engine:
 
         # ONGLET 3 : FINANCIALS & BACKTEST
         with tab3:
-            st.subheader("Simulation du Portefeuille Institutionnel")
+            st.subheader("Institutional Portfolio Simulation")
             
-            with st.expander("📋 Détail des coûts modélisés (Frictions)"):
+            with st.expander("📋 Modeled costs details (Frictions)"):
                 st.write(f"""
-                - **Commissions :** {tc_bps} points de base par transaction.
-                - **Slippage :** 2.0 points de base (simulation de la dégradation d'exécution).
-                - **Borrow Fee :** {borrow_fee*100:.1f} % annualisé (Coût payé chaque jour pour maintenir la jambe *short*).
+                - **Commissions:** {tc_bps} basis points per transaction.
+                - **Slippage:** 2.0 basis points (simulating execution degradation).
+                - **Borrow Fee:** {borrow_fee*100:.1f} % annualized (Cost paid daily to maintain the *short* leg).
                 """)
 
             fig_pnl = go.Figure()
             fig_pnl.add_trace(go.Scatter(x=df_results.index, y=df_results['portfolio_value'], 
-                                     name="Capital Net", fill='tozeroy', line=dict(color='teal', width=2)))
+                                     name="Net Capital", fill='tozeroy', line=dict(color='teal', width=2)))
             fig_pnl.add_hline(y=capital, line_dash="dot", line_color="black")
             fig_pnl.update_layout(height=400, margin=dict(l=0, r=0, t=10, b=0))
             st.plotly_chart(fig_pnl, use_container_width=True)
             
-            st.markdown("### 🔍 Journal des dernières opérations (Audit Log)")
+            st.markdown("### 🔍 Log of latest operations (Audit Log)")
             cols_to_show = ['zscore', 'signal', 'locked_beta', 'locked_units', 'pos_y', 'pos_x', 'net_pnl']
             st.dataframe(df_results[cols_to_show].tail(10).style.format("{:.2f}"))
 else:
     
     # État initial avant le lancement
-    st.info("👈 Paramètre tes actifs et clique sur 'Lancer le Moteur Quantitatif' dans la barre latérale pour générer l'analyse.")
+    st.info("👈 Configure your assets and click 'Run Quantitative Engine' in the sidebar to generate the analysis.")
