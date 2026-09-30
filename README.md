@@ -1,8 +1,8 @@
-# 📈 StatArb Quant Platform (Pairs Trading & Kalman Filter)
+# StatArb Quant Platform (Pairs Trading & Kalman Filter)
 
 Plateforme quantitative complète de trading paires (*Pairs Trading*) market-neutral développée en Python et Streamlit. Ce projet implémente une chaîne complète de recherche, de modélisation stochastique et de backtesting institutionnel intégrant les frictions réelles du marché (commissions, slippage, coûts d'emprunt à découvert).
 
-## 🚀 Fonctionnalités Clés par Module
+## Fonctionnalités Clés par Module
 
 1. **Ingestion & Cointégration (`stat_arb_core.py`) :**
    - Téléchargement robuste des prix ajustés via l'API `yfinance`.
@@ -28,7 +28,7 @@ Plateforme quantitative complète de trading paires (*Pairs Trading*) market-neu
 
 Comprehensive market-neutral pairs trading quantitative platform developed in Python and Streamlit. This project implements an end-to-end pipeline for research, stochastic modeling, and institutional backtesting incorporating real market frictions (commissions, slippage, short-borrowing costs).
 
-## 🚀 Key Features by Module
+## Key Features by Module
 
 1. **Ingestion & Cointegration (`stat_arb_core.py`):**
    - Robust downloading of adjusted prices via the `yfinance` API.
@@ -52,7 +52,7 @@ Comprehensive market-neutral pairs trading quantitative platform developed in Py
    - 
 ---
 
-## 🛠️ Installation et Utilisation
+## Installation et Utilisation
 
 1. **Cloner le dépôt / Clone the Reposit :**
    ```bash
