@@ -34,9 +34,9 @@ with st.sidebar:
     st.subheader("1. Investment Universe")
     col_y, col_x = st.columns(2)
     with col_y:
-        ticker_y = st.text_input("Asset Y", value="KO", help="Dependent asset (e.g., Coca-Cola)")
+        ticker_y = st.text_input("Asset Y", value="JPM", help="Dependent asset (e.g., Coca-Cola)")
     with col_x:
-        ticker_x = st.text_input("Asset X", value="PEP", help="Independent asset (e.g., PepsiCo)")
+        ticker_x = st.text_input("Asset X", value="BAC", help="Independent asset (e.g., PepsiCo)")
     
     start_date = st.date_input("Start Date", pd.to_datetime("2020-01-01"))
     end_date = st.date_input("End Date", pd.to_datetime("2024-01-01"))
